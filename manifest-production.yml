@@ -1,5 +1,5 @@
 applications:
-- name: pal-tracker
+- name: pal-tracker-production-ashish-sandeep
   path: src/PalTracker/bin/Release/netcoreapp2.1/publish/
   random-route: false
   env:
