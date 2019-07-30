@@ -1,6 +1,6 @@
 applications:
 - name: pal-tracker-review-ashish-sandeep
   path: src/PalTracker/bin/Release/netcoreapp2.1/publish/
-  random-route: false
+  random-route: true
   env:
     WELCOME_MESSAGE: Hello from the review environment
