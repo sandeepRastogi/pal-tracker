@@ -1,6 +1,7 @@
 applications:
 - name: pal-tracker-production-ashish-sandeep
   path: src/PalTracker/bin/Release/netcoreapp2.1/publish/
-  random-route: true
+  routes:
+  - route: https://pal-tracker-production-ashish-sandeep-boisterous-ostrich.cfapps.io/
   env:
     WELCOME_MESSAGE: Hello from the production environment
