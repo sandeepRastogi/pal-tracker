@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Steeltoe.CloudFoundry.Connector.MySql.EFCore;
+using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.CloudFoundry;
+using Steeltoe.Management.Endpoint.Info;
 
 namespace PalTracker
 {
@@ -29,19 +26,23 @@ namespace PalTracker
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddSingleton(sp => new WelcomeMessage(
-                Configuration.GetValue<string>("WELCOME_MESSAGE", "WELCOME_MESSAGE not configured.")
+               Configuration.GetValue<string>("WELCOME_MESSAGE", "WELCOME_MESSAGE not configured.")
             ));
 
             services.AddSingleton(sp => new CloudFoundryInfo(
-                Configuration.GetValue<string>("PORT"),
-                Configuration.GetValue<string>("MEMORY_LIMIT"),
-                Configuration.GetValue<string>("CF_INSTANCE_INDEX"),
-                Configuration.GetValue<string>("CF_INSTANCE_ADDR")
+               Configuration.GetValue<string>("PORT", "PORT not configured."), 
+               Configuration.GetValue<string>("MEMORY_LIMIT", "MEMORY_LIMIT not configured."), 
+               Configuration.GetValue<string>("CF_INSTANCE_INDEX", "CF_INSTANCE_INDEX not configured."), 
+               Configuration.GetValue<string>("CF_INSTANCE_ADDR", "CF_INSTANCE_ADDR not configured.")
             ));
-            
-            services.AddDbContext<TimeEntryContext>(options => options.UseMySql(Configuration));
-            // services.AddSingleton<ITimeEntryRepository, InMemoryTimeEntryRepository>();
+
             services.AddScoped<ITimeEntryRepository, MySqlTimeEntryRepository>();
+            services.AddScoped<IHealthContributor, TimeEntryHealthContributor>();
+            services.AddDbContext<TimeEntryContext>(options => options.UseMySql(Configuration));
+            services.AddSingleton<IOperationCounter<TimeEntry>, OperationCounter<TimeEntry>>();
+            services.AddSingleton<IInfoContributor, TimeEntryInfoContributor>();
+
+            services.AddCloudFoundryActuators(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,6 +59,7 @@ namespace PalTracker
 
             app.UseHttpsRedirection();
             app.UseMvc();
+            app.UseCloudFoundryActuators();
         }
     }
 }

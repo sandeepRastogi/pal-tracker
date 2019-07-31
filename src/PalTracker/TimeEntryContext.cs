@@ -1,10 +1,10 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace PalTracker
 {
-    public class TimeEntryContext : DbContext
+    public class TimeEntryContext: DbContext
     {
-        public TimeEntryContext(DbContextOptions options) : base(options)
+        public TimeEntryContext(DbContextOptions options): base(options)
         {
         }
 

@@ -1,4 +1,4 @@
-namespace PalTracker
+﻿namespace PalTracker
 {
     public static class MappingExtensions
     {

@@ -1,6 +1,6 @@
+﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 
 namespace PalTracker
 {
@@ -25,8 +25,11 @@ namespace PalTracker
 
         public TimeEntry Find(long id) => FindRecord(id).ToEntity();
 
+        private TimeEntryRecord FindRecord(long id) =>
+            _context.TimeEntryRecords.AsNoTracking().Single(t => t.Id == id);
+
         public bool Contains(long id) =>
-            _context.TimeEntryRecords.AsNoTracking().Any(t => t.Id == id);
+    _context.TimeEntryRecords.AsNoTracking().Any(t => t.Id == id);
 
         public IEnumerable<TimeEntry> List() =>
             _context.TimeEntryRecords.AsNoTracking().Select(t => t.ToEntity());
@@ -47,8 +50,5 @@ namespace PalTracker
             _context.TimeEntryRecords.Remove(FindRecord(id));
             _context.SaveChanges();
         }
-
-        private TimeEntryRecord FindRecord(long id) =>
-            _context.TimeEntryRecords.AsNoTracking().Single(t => t.Id == id);
     }
 }
